@@ -2,6 +2,13 @@ Make a window with GLFW and draw something in it with OpenGL.
 
 Doing this on Windows.
 
+## ToC
+- setup
+    - [environment](README.md#environment)
+    - [dependencies](README.md#dependencies)
+- do stuff
+    - [make a window](README.md#make-a-window)
+
 # Setup
 
 ## Environment
@@ -62,6 +69,8 @@ Or use my `make` recipe to see **all** the linker flags:
 $ make what-libs
 -lglfw3 -lglew32 -lopengl32
 ```
+
+# Do stuff
 
 ## Make a window
 
