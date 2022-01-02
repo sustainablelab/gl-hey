@@ -65,8 +65,44 @@ $ make what-libs
 
 ## Make a window
 
-Take a look at `main.cpp` from the `v0.1` tag:
+Instead of me rambling here, future me should just look at the
+version of `main.cpp` that does nothing but make a window.
+
+Hey future me, take a look at `main.cpp` from the `v0.1` tag:
 
 ```bash
 git show v0.1 main.cpp
+```
+
+To throw that `main.cpp v0.1` into a file to open in Vim:
+
+- checkout the old commit
+- copy the text into a new file (a file Git is not tracking)
+- and go back to the latest commit (new file still be there)
+
+Like this:
+
+```bash-git
+$git checkout v0.1
+Note: switching to 'v0.1'.
+
+You are in 'detached HEAD' state.
+...
+```
+
+Don't worry about the 'detached HEAD' state.
+
+Dump the old main.cpp into a new file:
+
+```bash
+$ cat main.cpp > main-v0.1.cpp
+```
+
+And get back to the latest commit (fixes the detached HEAD
+thing):
+
+```git-bash
+$ git checkout master
+Previous HEAD position was 22f8ded Make a window or go fullscreen
+Switched to branch 'master'
 ```
