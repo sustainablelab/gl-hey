@@ -74,6 +74,9 @@ $ make what-libs
 
 ## Make a window
 
+This is a good reference:
+https://www.glfw.org/docs/3.0/quick.html
+
 Instead of me rambling here, future me should just look at the
 version of `main.cpp` that does nothing but make a window.
 
@@ -115,3 +118,4 @@ $ git checkout master
 Previous HEAD position was 22f8ded Make a window or go fullscreen
 Switched to branch 'master'
 ```
+
