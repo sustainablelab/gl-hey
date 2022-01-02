@@ -8,6 +8,7 @@ Doing this on Windows.
     - [dependencies](README.md#dependencies)
 - do stuff
     - [make a window](README.md#make-a-window)
+    - [make a triangle in the window](README.md#make-a-triangle)
 
 # Setup
 
@@ -119,3 +120,15 @@ Previous HEAD position was 22f8ded Make a window or go fullscreen
 Switched to branch 'master'
 ```
 
+## Make a triangle
+
+In commit `4dde31` I go fullscreen and do a triangle:
+
+![my first triangle](doc/img/my-first-triangle.png)
+
+What is this magic? View a `diff` against the commit tagged as
+`v0.1`:
+
+```bash
+$ git diff v0.1 4dde31 main.cpp
+```
