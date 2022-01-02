@@ -78,6 +78,10 @@ $ make what-libs
 This is a good reference:
 https://www.glfw.org/docs/3.0/quick.html
 
+But when you get to the part about making a triangle, don't
+follow that reference cause it's an older OpenGL API. So just
+take a look for the window stuff and setting up callbacks.
+
 Instead of me rambling here, future me should just look at the
 version of `main.cpp` that does nothing but make a window.
 
@@ -122,6 +126,9 @@ Switched to branch 'master'
 
 ## Make a triangle
 
+This is a good reference:
+https://learnopengl.com/Getting-started/Hello-Triangle
+
 In commit `4dde31` I go fullscreen and do a triangle:
 
 ![my first triangle](doc/img/my-first-triangle.png)
@@ -132,3 +139,6 @@ What is this magic? View a `diff` against the commit tagged as
 ```bash
 $ git diff v0.1 4dde31 main.cpp
 ```
+
+My triangle code is copy-and-paste from the `learnopengl`
+link.
