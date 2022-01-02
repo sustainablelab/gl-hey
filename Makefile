@@ -5,6 +5,7 @@ OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 UNAME_S := $(shell uname -s)
 
 CXXFLAGS += -g -Wall -Wformat
+LIBS =
 
 ifeq ($(OS), Windows_NT)
 	ECHO_MESSAGE = "MinGW"

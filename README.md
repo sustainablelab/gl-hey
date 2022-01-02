@@ -63,3 +63,10 @@ $ make what-libs
 -lglfw3 -lglew32 -lopengl32
 ```
 
+## Make a window
+
+Take a look at `main.cpp` from the `v0.1` tag:
+
+```bash
+git show v0.1 main.cpp
+```
