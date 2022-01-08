@@ -333,8 +333,10 @@ int main(int, char**)
     glBindBuffer(GL_ARRAY_BUFFER, 0); // 0 unbinds last VBO bound to target
     /* glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // unbind EBO */
     glBindVertexArray(0); // 0 breaks existing VAO biding
-    // Draw wireframe polygons.
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    /* // Draw wireframe polygons. */
+    /* glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); */
+    // Draw filled polygons.
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     /* =====[ LOOP ]===== */
     while (!glfwWindowShouldClose(window))
@@ -357,11 +359,23 @@ int main(int, char**)
         // ..:: Render a big old triangle ::..
         glUseProgram(shaderProgramTaffy);
         glBindVertexArray(VAO);
+        /* // Draw using the vertex buffer only */
         /* glDrawArrays(GL_TRIANGLES, 0, 3); */
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-        /* glUseProgram(shaderProgramTardis); */
         /* glDrawArrays(GL_TRIANGLES, 2, 3); */
-        /* glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL); */
+        /* // Draw a rectangle using the elements buffer */
+        /* glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL); */
+        // Draw a red triangle using the elements buffer
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
+        // Draw a blue triangle using the elements buffer
+        glUseProgram(shaderProgramTardis);
+        // Draw a blue rectangle by drawing each line segment
+        // Note this will NOT be filled even with polygon mode GL_FILL
+        // First two elments are the right wall
+        // Each additional element draws another wall, continuing CCW around the
+        // rectangle
+        // Five elements total closes the rectangle.
+        // Six elements returns to point 2, drawing over the diagonal as well
+        glDrawElements(GL_LINE_STRIP, 5, GL_UNSIGNED_INT, NULL);
 
         // TODO: deal with keyboard/mouse events
         // TODO: render stuff
