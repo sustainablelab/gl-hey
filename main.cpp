@@ -16,11 +16,18 @@ const char *vertexShaderSource = "#version 330 core\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
+const char *fragmentShaderTardisSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "   FragColor = vec4(0.039216f, 0.615686f, 1.0f, 1.0f);\n"
+    "}\n\0";
+
+const char *fragmentShaderTaffySource = "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4(1.0f, 0.172549f, 0.294118f, 1.0f);\n"
     "}\n\0";
 
 /* =====[ CALLBACKS ]===== */
@@ -145,7 +152,8 @@ int main(int, char**)
     /* =====[ SETUP_SHADERS ]===== */
 
     // Make this:
-    unsigned int shaderProgram = glCreateProgram();
+    unsigned int shaderProgramTardis = glCreateProgram();
+    unsigned int shaderProgramTaffy = glCreateProgram();
     { // Compile the shader programs.
         unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         { // Vertex Shader
@@ -176,22 +184,47 @@ int main(int, char**)
                 fflush(stdout);
             }
         }
-        unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        { // Fragment Shader
+        unsigned int fragmentShaderTardis = glCreateShader(GL_FRAGMENT_SHADER);
+        { // Fragment Shader - Tardis Blue
             glShaderSource(
-                    fragmentShader, // write new shader source to fragmentShader
+                    fragmentShaderTardis, // write new shader source to fragmentShader
                     1,              // all the source is in just 1 string
-                    &fragmentShaderSource, // this be the string with the shader
+                    &fragmentShaderTardisSource, // this be the string with the shader
                     NULL // the string be NULL terminated
                     );
-            glCompileShader(fragmentShader);
+            glCompileShader(fragmentShaderTardis);
             // check for shader compile errors
             int success;
             char infoLog[512];
-            glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+            glGetShaderiv(fragmentShaderTardis, GL_COMPILE_STATUS, &success);
             if (!success)
             {
-                glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+                glGetShaderInfoLog(fragmentShaderTardis, 512, NULL, infoLog);
+                printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s",infoLog);
+                fflush(stdout);
+            }
+            else
+            {
+                printf("Compiled fragment shader.\n");
+                fflush(stdout);
+            }
+        }
+        unsigned int fragmentShaderTaffy = glCreateShader(GL_FRAGMENT_SHADER);
+        { // Fragment Shader - Taffy Red
+            glShaderSource(
+                    fragmentShaderTaffy, // write new shader source to fragmentShader
+                    1,              // all the source is in just 1 string
+                    &fragmentShaderTaffySource, // this be the string with the shader
+                    NULL // the string be NULL terminated
+                    );
+            glCompileShader(fragmentShaderTaffy);
+            // check for shader compile errors
+            int success;
+            char infoLog[512];
+            glGetShaderiv(fragmentShaderTaffy, GL_COMPILE_STATUS, &success);
+            if (!success)
+            {
+                glGetShaderInfoLog(fragmentShaderTaffy, 512, NULL, infoLog);
                 printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s",infoLog);
                 fflush(stdout);
             }
@@ -202,15 +235,32 @@ int main(int, char**)
             }
         }
         { // link shaders
-            glAttachShader(shaderProgram, vertexShader);
-            glAttachShader(shaderProgram, fragmentShader);
-            glLinkProgram(shaderProgram);
+            // Tardis blue
+            glAttachShader(shaderProgramTardis, vertexShader);
+            glAttachShader(shaderProgramTardis, fragmentShaderTardis);
+            glLinkProgram(shaderProgramTardis);
             // check for linking errors
             int success;
             char infoLog[512];
-            glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+            glGetProgramiv(shaderProgramTardis, GL_LINK_STATUS, &success);
             if (!success) {
-                glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+                glGetProgramInfoLog(shaderProgramTardis, 512, NULL, infoLog);
+                printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s",infoLog);
+                fflush(stdout);
+            }
+            else
+            {
+                printf("Linked shader program.\n");
+                fflush(stdout);
+            }
+            // Taffy red
+            glAttachShader(shaderProgramTaffy, vertexShader);
+            glAttachShader(shaderProgramTaffy, fragmentShaderTaffy);
+            glLinkProgram(shaderProgramTaffy);
+            // check for linking errors
+            glGetProgramiv(shaderProgramTaffy, GL_LINK_STATUS, &success);
+            if (!success) {
+                glGetProgramInfoLog(shaderProgramTaffy, 512, NULL, infoLog);
                 printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s",infoLog);
                 fflush(stdout);
             }
@@ -256,19 +306,23 @@ int main(int, char**)
 
         /* =====[ LOOP_RENDER ]===== */
 
-        // Make background coffee colored
+        // Make background dark, but not black
         glClearColor(
-                bwc_coffee.r, // GLclampf red,
-                bwc_coffee.g, // GLclampf green,
-                bwc_coffee.b, // GLclampf blue,
-                bwc_coffee.a  // GLclampf alpha
+                bwc_blackgravel.r, // GLclampf red,
+                bwc_blackgravel.g, // GLclampf green,
+                bwc_blackgravel.b, // GLclampf blue,
+                bwc_blackgravel.a  // GLclampf alpha
                 );
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Render a big old triangle
-        glUseProgram(shaderProgram);
+        // ..:: Render a big old triangle ::..
+        glUseProgram(shaderProgramTaffy);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        /* glDrawArrays(GL_TRIANGLES, 0, 3); */
+        /* glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL); */
+        glUseProgram(shaderProgramTardis);
+        /* glDrawArrays(GL_TRIANGLES, 2, 3); */
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
 
         // TODO: deal with keyboard/mouse events
         // TODO: render stuff
@@ -279,7 +333,11 @@ int main(int, char**)
     }
     
     /* =====[ CLEANUP ]===== */
-
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    glDeleteProgram(shaderProgramTardis);
+    glDeleteProgram(shaderProgramTaffy);
     glfwDestroyWindow(window);
     glfwTerminate();
 
