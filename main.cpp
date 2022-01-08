@@ -271,31 +271,70 @@ int main(int, char**)
             }
         }
         glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
+        glDeleteShader(fragmentShaderTardis);
+        glDeleteShader(fragmentShaderTaffy);
     }
-    // Do a triangle?
-    unsigned int VBO, VAO; // vertex buffer object, vertex array object
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    // Bind the Vertex Array Object first
-    glBindVertexArray(VAO);
-    // Then bind and set vertex buffer(s)
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // Do a rectangle!
+    // One rectangle be two adjacent triangles.
+    //
+    // Triangle: because that's the OpenGL primitive.
+    // One triangle be three vertices, so store six vertices? No.
+    // Store four vertices. Use indices to pick the three for each triangle.
+    //
+    // Describe it like this.
+    // List the vertices of each triangle going CCW.
+    //                         2\───┐1
+    //                          │\  │ "first triangle":
+    //                          │ \ │  vertices [0,1,2]
+    // "second triangle":       │  \│
+    //  vertices [3,0,2]       3└───┘0
+    //
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left
-         0.5f, -0.5f, 0.0f, // right
-         0.0f,  0.5f, 0.0f  // top
+         0.5f, -0.5f, 0.0f, // 0: bottom right
+         0.5f,  0.5f, 0.0f, // 1: top right
+        -0.5f,  0.5f, 0.0f, // 2: top left
+        -0.5f, -0.5f, 0.0f,  // 3: bottom left
     };
+    // ORDER OF VERTICES MATTERS
+    // Pick triangle vertices going COUNTER-CLOCKWISE around the triangle
+    // Use CCW ORDER OF VERTICES, or OpenGL draws NOTHING :(
+    unsigned int indices[] = {
+        0, 1, 2,     // first triangle:
+        3, 0, 2     // second triangle
+    };
+    unsigned int VBO, VAO, EBO;
+    glGenVertexArrays(1, &VAO);     // VAO: vertex array object
+    glGenBuffers(1, &VBO);          // VBO: vertex buffer object
+    glGenBuffers(1, &EBO);          // EBO: element buffer object
+    // Bind VAO first
+    glBindVertexArray(VAO);
+    // Bind VBO and create the VBO data store to hold vertices
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // Bind EBO and create the EBO data store to hold indices
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     // And then configure vertex attributes(s).
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    /* glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); */
+    glVertexAttribPointer( // each row vertex is a component, every 3 is an attribute?
+            0, // GLuint index: index of generic vertex attribute to modify
+            3, // GLint size: [1,2,3,4]: number of components per attribute
+            GL_FLOAT, // GLenum type: data type of each component
+            GL_FALSE, // GLboolean normalized
+            3 * sizeof(float), // GLsizei stride: byte offset between attributes
+            (void*)0); // const GLvoid *pointer: offset of first component
+    // Enable the vertex attribute array I just created
     glEnableVertexAttribArray(0);
-    // - VBO registered as the vertex attribute's bound vertex buffer object
-    // - OK to unbind.
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
-    glBindVertexArray(0); 
+    // - VAO keeps track of EBO bindings.
+    //      - Last EBO bound while VAO is active becomes the VAO's EBO
+    //      - So unbind the VBO but do not unbind the EBO
+    //      - But it's OK to unbind VBO
+    // Unbind
+    glBindBuffer(GL_ARRAY_BUFFER, 0); // 0 unbinds last VBO bound to target
+    /* glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // unbind EBO */
+    glBindVertexArray(0); // 0 breaks existing VAO biding
     // Draw wireframe polygons.
-    /* glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); */
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     /* =====[ LOOP ]===== */
     while (!glfwWindowShouldClose(window))
@@ -319,10 +358,10 @@ int main(int, char**)
         glUseProgram(shaderProgramTaffy);
         glBindVertexArray(VAO);
         /* glDrawArrays(GL_TRIANGLES, 0, 3); */
-        /* glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL); */
-        glUseProgram(shaderProgramTardis);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+        /* glUseProgram(shaderProgramTardis); */
         /* glDrawArrays(GL_TRIANGLES, 2, 3); */
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
+        /* glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL); */
 
         // TODO: deal with keyboard/mouse events
         // TODO: render stuff
