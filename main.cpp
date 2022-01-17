@@ -57,6 +57,34 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     }
 }
 
+/* =====[ SHADER HELPERS ]===== */
+
+static bool is_shader_compile_error(unsigned int Shader, const char* type)
+{ // Check for shader compile errors.
+    // Parameters
+    // ----------
+    // Shader: u32 returned by glCreateShader()
+    // type: string "vertex" or "fragment"
+    //
+    // Return true if shader compile failed.
+    int success;
+    char infoLog[512];
+    glGetShaderiv(Shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(Shader, 512, NULL, infoLog);
+        printf("ERROR::SHADER::%s::COMPILATION_FAILED\n%s",type,infoLog);
+        fflush(stdout);
+        return true;
+    }
+    else
+    {
+        printf("Compiled %s shader.\n",type);
+        fflush(stdout);
+        return false;
+    }
+}
+
 int main(int, char**)
 { // setup, setup_shaders, loop, loop_render, and cleanup
     /* =====[ SETUP ]===== */
@@ -168,21 +196,7 @@ int main(int, char**)
                     NULL          // const GLint *length
                     );
             glCompileShader(vertexShader);
-            // check for shader compile errors
-            int success;
-            char infoLog[512];
-            glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-            if (!success)
-            {
-                glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-                printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s",infoLog);
-                fflush(stdout);
-            }
-            else
-            {
-                printf("Compiled vertex shader.\n");
-                fflush(stdout);
-            }
+            is_shader_compile_error(vertexShader, "vertex");
         }
         unsigned int fragmentShaderTardis = glCreateShader(GL_FRAGMENT_SHADER);
         { // Fragment Shader - Tardis Blue
@@ -193,21 +207,7 @@ int main(int, char**)
                     NULL // the string be NULL terminated
                     );
             glCompileShader(fragmentShaderTardis);
-            // check for shader compile errors
-            int success;
-            char infoLog[512];
-            glGetShaderiv(fragmentShaderTardis, GL_COMPILE_STATUS, &success);
-            if (!success)
-            {
-                glGetShaderInfoLog(fragmentShaderTardis, 512, NULL, infoLog);
-                printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s",infoLog);
-                fflush(stdout);
-            }
-            else
-            {
-                printf("Compiled fragment shader.\n");
-                fflush(stdout);
-            }
+            is_shader_compile_error(fragmentShaderTardis, "fragment");
         }
         unsigned int fragmentShaderTaffy = glCreateShader(GL_FRAGMENT_SHADER);
         { // Fragment Shader - Taffy Red
@@ -218,21 +218,7 @@ int main(int, char**)
                     NULL // the string be NULL terminated
                     );
             glCompileShader(fragmentShaderTaffy);
-            // check for shader compile errors
-            int success;
-            char infoLog[512];
-            glGetShaderiv(fragmentShaderTaffy, GL_COMPILE_STATUS, &success);
-            if (!success)
-            {
-                glGetShaderInfoLog(fragmentShaderTaffy, 512, NULL, infoLog);
-                printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s",infoLog);
-                fflush(stdout);
-            }
-            else
-            {
-                printf("Compiled fragment shader.\n");
-                fflush(stdout);
-            }
+            is_shader_compile_error(fragmentShaderTaffy, "fragment");
         }
         { // link shaders
             // Tardis blue
